@@ -48,8 +48,8 @@ func main() {
 	model.Name = util.ToUpperWithSplitter(*Table, *Splitter, true)
 	model.TableName = *Table
 	model.Comment = getTableInfo(DB, Table)
-	mapperWrite := write.MapperWrite{}
-	modelWrite := write.ModelWrite{}
+	var mapperWrite write.Write = write.MapperWrite{}
+	var modelWrite write.Write = write.ModelWrite{}
 	var ch = make(chan string, 1)
 	go mapperWrite.Write(model, ch)
 	go modelWrite.Write(model, ch)
@@ -63,7 +63,7 @@ func main() {
 func getcolumnInfo(db *sql.DB, table *string) *[]model.Field {
 	result, err := db.Query(fmt.Sprintf("SHOW FULL columns FROM `%s`", *table))
 	util.CheckError(err, constant.ShowFullColumnFailed)
-	var models []model.Field
+	var fields []model.Field
 	for result.Next() {
 		var column model.Column
 		result.Scan(&column.Name, &column.Type, &column.Collation, &column.Null, &column.Key, &column.Default, &column.Extra, &column.Privileges, &column.Comment)
@@ -73,9 +73,9 @@ func getcolumnInfo(db *sql.DB, table *string) *[]model.Field {
 		fieldMeta.FieldName = util.ToUpperWithSplitter(column.Name, *Splitter, false)
 		fieldMeta.FieldType = mappingMYSQLToJava(column.Type)
 		m := model.Field{Column: column, FieldMeta: fieldMeta}
-		models = append(models, m)
+		fields = append(fields, m)
 	}
-	return &models
+	return &fields
 }
 
 func getTableInfo(db *sql.DB, table *string) string {
@@ -98,7 +98,7 @@ func getTableInfo(db *sql.DB, table *string) string {
 // 因为它们使得索引、索引的统计信息以及比较运算更加复杂。你应该用0、一个特殊的值或者一个空串代替空值
 func checkFiledAllowNull(column model.Column) {
 	if model.YesOrNo.String(0) == column.Null {
-		log.Printf("字段(%s)允许为空,如非必要,建议设置成NOT NULl.\n", column.Name)
+		log.Printf("字段(%s)允许为空,如非必要,建议设置成NOT NULL.\n", column.Name)
 	}
 	// if !column.Default.Valid {
 	// 	log.Printf("字段(%s)默认值为NULL,可调优.\n", column.Name)
