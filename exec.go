@@ -48,8 +48,8 @@ func main() {
 	model.Name = util.ToUpperWithSplitter(*Table, *Splitter, true)
 	model.TableName = *Table
 	model.Comment = getTableInfo(DB, Table)
-	var mapperWrite write.Write = write.MapperWrite{}
-	var modelWrite write.Write = write.ModelWrite{}
+	var mapperWrite write.Write = &write.MapperWrite{}
+	var modelWrite write.Write = &write.ModelWrite{}
 	var ch = make(chan string, 1)
 	go mapperWrite.Write(model, ch)
 	go modelWrite.Write(model, ch)

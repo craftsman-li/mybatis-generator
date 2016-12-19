@@ -21,12 +21,13 @@ var enterKeyboard = [...]string{
 	"where",
 	"resultMap",
 	"mapper",
+	"trim",
 }
 
 var mapperTabNumber int
 var primaryKeys []model.Field
 
-func (w MapperWrite) Write(model *model.Model, ch chan string) {
+func (w *MapperWrite) Write(model *model.Model, ch chan string) {
 	ch <- fmt.Sprintf("开始写入Mapper- %s\n", time.Now().String())
 	file := util.CreateFile(fmt.Sprintf("%sMapper.xml", model.Name))
 	defer file.Close()
@@ -113,7 +114,9 @@ func writeCriteria(content *string, model *model.Model) {
 
 func writeCreate(content *string, m *model.Model) {
 	writeMapper(content, "<create id=\"create\">")
-	writeMapper(content, "INSERT INTO `"+m.TableName+"`(")
+
+	writeMapper(content, "INSERT INTO <include id=\"tb\"/> (")
+	writeMapper(content, "<trim suffix=\"\" suffixOverrides=\",\">")
 	additionalFields := []model.Field{}
 	for _, field := range *m.Fields {
 		if strings.Contains(field.Comment.String, CreateTimeDesc) || strings.Contains(field.Comment.String, UpdateTimeDesc) {
@@ -127,7 +130,10 @@ func writeCreate(content *string, m *model.Model) {
 		additionalColumns = append(additionalColumns, "`"+field.Name+"`")
 	}
 	writeMapper(content, strings.Join(additionalColumns, ","))
+	writeMapper(content, "</trim>")
 	writeMapper(content, ") VALUES (")
+	writeMapper(content, "<trim suffix=\"\" suffixOverrides=\",\">")
+
 	for _, field := range *m.Fields {
 		if !strings.Contains(field.Comment.String, CreateTimeDesc) || strings.Contains(field.Comment.String, UpdateTimeDesc) {
 			writeMapper(content, "<if test=\""+field.FieldName+" != null\"> #{"+field.FieldName+"},</if>")
@@ -138,6 +144,7 @@ func writeCreate(content *string, m *model.Model) {
 		additionalColumns = append(additionalColumns, "now()")
 	}
 	writeMapper(content, strings.Join(additionalColumns, ","))
+	writeMapper(content, "</trim>")
 
 	writeMapper(content, ")")
 	writeMapper(content, "</sql>")

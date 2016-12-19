@@ -16,7 +16,7 @@ type ModelWrite struct{}
 
 var modelTabNum int
 
-func (m ModelWrite) Write(model *model.Model, ch chan string) {
+func (m *ModelWrite) Write(model *model.Model, ch chan string) {
 	ch <- fmt.Sprintf("开始写入model- %s\n", time.Now().String())
 	file := util.CreateFile(fmt.Sprintf("%s.java", model.Name))
 	defer file.Close()
@@ -35,7 +35,7 @@ func (m ModelWrite) Write(model *model.Model, ch chan string) {
 	ch <- fmt.Sprintf("写入model完成- %s\n", time.Now().String())
 }
 
-func (m ModelWrite) writeField(content *string, field model.Field) {
+func (m *ModelWrite) writeField(content *string, field model.Field) {
 	if field.FieldType[2] == Yes && !strings.Contains(*content, field.FieldType[3]) {
 		pushContent := Import + Blank + field.FieldType[3] + LineEnd
 		util.PrependLine(content, pushContent)
@@ -44,13 +44,13 @@ func (m ModelWrite) writeField(content *string, field model.Field) {
 	m.writeInfo(content, Private+field.FieldType[1]+Blank+field.FieldName+LineEnd)
 }
 
-func (m ModelWrite) writePackage(f *string, packageInfo string) {
+func (m *ModelWrite) writePackage(f *string, packageInfo string) {
 	if EmptyString != packageInfo {
 		util.PrependLine(f, Package+packageInfo+LineEnd+NewLine)
 	}
 }
 
-func (m ModelWrite) writeDoc(f *string, docs ...string) {
+func (m *ModelWrite) writeDoc(f *string, docs ...string) {
 	tab := strings.Join(make([]string, modelTabNum), Blank)
 	first := NewLine + tab + BackSlant + Star + Star
 	util.AppendLine(f, first)
@@ -63,7 +63,7 @@ func (m ModelWrite) writeDoc(f *string, docs ...string) {
 }
 
 // 写入serialVersionUID
-func (m ModelWrite) writeSerialVersionUID(content *string) {
+func (m *ModelWrite) writeSerialVersionUID(content *string) {
 	uid := time.Now().UnixNano()
 
 	flag := rand.New(rand.NewSource(uid)).Int63n(100)
@@ -78,7 +78,7 @@ func (m ModelWrite) writeSerialVersionUID(content *string) {
 }
 
 // 写入具体信息,所有写入均调用此方法
-func (m ModelWrite) writeInfo(f *string, info string) {
+func (m *ModelWrite) writeInfo(f *string, info string) {
 	if strings.Contains(info, BraceEnd) {
 		modelTabNum -= TabNum
 	}
