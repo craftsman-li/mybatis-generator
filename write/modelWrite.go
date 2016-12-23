@@ -17,7 +17,7 @@ type ModelWrite struct{}
 var modelTabNum int
 
 func (m *ModelWrite) Write(model *model.Model, ch chan string) {
-	ch <- fmt.Sprintf("开始写入model- %s\n", time.Now().String())
+	ch <- fmt.Sprintf("开始写入model- %s", time.Now().String())
 	file := util.CreateFile(fmt.Sprintf("%s.java", model.Name))
 	defer file.Close()
 	var content string
@@ -32,7 +32,7 @@ func (m *ModelWrite) Write(model *model.Model, ch chan string) {
 	m.writePackage(&content, *initialization.Packages)
 
 	file.WriteString(content)
-	ch <- fmt.Sprintf("写入model完成- %s\n", time.Now().String())
+	ch <- fmt.Sprintf("写入model完成- %s", time.Now().String())
 }
 
 func (m *ModelWrite) writeField(content *string, field model.Field) {

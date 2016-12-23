@@ -19,7 +19,7 @@ const (
 	DocEnd                = "."
 	Package               = "package "
 	LineEnd               = ";"
-	DataAnnotation        = "@Data"
+	DataAnnotation        = "@Data\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor"
 	Blank                 = " "
 	ClassDefine           = Public + "class "
 	ImplementSerializable = " implements Serializable " + BraceStart
@@ -33,4 +33,6 @@ const (
 	DoubleQuotes          = "\""
 	CreateTimeDesc        = "创建时间"
 	UpdateTimeDesc        = "更新时间"
+	AutoIncrement         = "auto_increment"
+	PriKey                = "pri"
 )

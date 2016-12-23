@@ -3,16 +3,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"mybatis-generator/constant"
 	. "mybatis-generator/initialization"
 	"mybatis-generator/model"
 	"mybatis-generator/util"
-	"strings"
-
 	"mybatis-generator/write"
-
-	_ "github.com/go-sql-driver/mysql"
+	"strings"
 )
 
 var Mapping = [...][4]string{
@@ -32,7 +30,7 @@ var Mapping = [...][4]string{
 	{"DOUBLE", "Double", "NO", "java.lang.Double"},
 	{"DECIMAL", "BigDecimal", "YES", "java.math.BigDecimal"},
 	{"BOOLEAN", "Integer", "NO", "java.lang.Integer"},
-	{"DATE", "Date", "YES", "java.sql.Date"},
+	{"DATE", "Date", "YES", "java.util.Date"},
 	{"TIME", "Time", "YES", "java.sql.Time"},
 	{"DATETIME", "Date", "YES", "java.sql.Date"},
 	// 	{"DATETIME", "Timestamp", "YES", "java.sql.Timestamp"},
@@ -85,8 +83,8 @@ func getTableInfo(db *sql.DB, table *string) string {
 	util.CheckError(err, constant.ShowFullColumnFailed)
 	temp := strings.Split(sql, "=")
 	length := len(temp)
-	if length > 0 && strings.Contains(temp[length-2], "COMMENT") {
-		return strings.Replace(temp[len(temp)-1], "'", "", -1)
+	if length > 0 && strings.Contains(temp[length - 2], "COMMENT") {
+		return strings.Replace(temp[len(temp) - 1], "'", "", -1)
 	}
 	return constant.EmptyString
 }
