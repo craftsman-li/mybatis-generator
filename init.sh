@@ -1,3 +1,3 @@
 #!/bin/sh
 
-go run exec.go -pass anywhere -t link_product_distribution -db link -package com.haier.com
+go run exec.go -pass anywhere -db link
