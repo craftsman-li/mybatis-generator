@@ -2,10 +2,10 @@
 mybatis xml生成脚本
 
 ## 简单、快速
-window32位使用: bin/win86-mybatis-generator.exe
-window64位使用: bin/win64-mybatis-generator.exe
-linux使用: bin/linux-mybatis-generator
-mac使用: bin/mac-mybatis-generator
+* window32位使用: bin/win86-mybatis-generator.exe
+* window64位使用: bin/win64-mybatis-generator.exe
+* linux使用: bin/linux-mybatis-generator
+* mac使用: bin/mac-mybatis-generator
 ### 支持的参数:
 ```json
   -db string
