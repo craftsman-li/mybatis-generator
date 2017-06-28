@@ -2,9 +2,9 @@ package write
 
 import (
 	"fmt"
-	"gobackup/mapper/util"
 	. "mybatis-generator/constant"
 	"mybatis-generator/model"
+	"mybatis-generator/util"
 	"strings"
 	"time"
 )
@@ -54,20 +54,20 @@ func (w *MapperWrite) Write(model *model.Model, ch chan string) {
 }
 
 func writeStartDocumentType(content *string, model string) {
-	writeMapper(content, "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<!-- \n ~ " + GeneratorInfo + time.Now().Format("2006/01/02 15:04:05") + ".\n  -->\n<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\" >\n")
-	writeMapper(content, "<mapper namespace=\"" + model + "\">\n")
+	writeMapper(content, "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<!-- \n ~ "+GeneratorInfo+time.Now().Format("2006/01/02 15:04:05")+".\n  -->\n<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\" >\n")
+	writeMapper(content, "<mapper namespace=\""+model+"\">\n")
 }
 
 func writeResultMap(content *string, model *model.Model) {
-	writeMapper(content, "<resultMap id=\"" + model.Name + "Map\" type=\"" + model.Name + "\">")
+	writeMapper(content, "<resultMap id=\""+model.Name+"Map\" type=\""+model.Name+"\">")
 	for index, v := range *model.Fields {
 		if strings.Contains(strings.ToLower(v.Extra.String), AutoIncrement) {
 			autoIncrement = &(*model.Fields)[index]
 		}
 		if v.Key.String == "PRI" {
-			writeMapper(content, "<id column=\"" + v.Name + "\" property=\"" + v.FieldName + "\"/>")
+			writeMapper(content, "<id column=\""+v.Name+"\" property=\""+v.FieldName+"\"/>")
 		} else {
-			writeMapper(content, "<result column=\"" + v.Name + "\" property=\"" + v.FieldName + "\"/>")
+			writeMapper(content, "<result column=\""+v.Name+"\" property=\""+v.FieldName+"\"/>")
 		}
 	}
 	writeMapper(content, "</resultMap>")
@@ -75,7 +75,7 @@ func writeResultMap(content *string, model *model.Model) {
 
 func writeTableName(content *string, table string) {
 	writeMapper(content, "<sql id=\"tb\">")
-	writeMapper(content, "`" + table + "`")
+	writeMapper(content, "`"+table+"`")
 	writeMapper(content, "</sql>")
 }
 
@@ -86,7 +86,7 @@ func writeColsExcludeAutoIncrement(content *string, model *model.Model) {
 		if strings.Contains(strings.ToLower(col.Extra.String), AutoIncrement) {
 			continue
 		}
-		s = append(s, "`" + col.Name + "`")
+		s = append(s, "`"+col.Name+"`")
 	}
 	writeMapper(content, strings.Join(s, ", "))
 	writeMapper(content, "</sql>")
@@ -99,7 +99,7 @@ func writeColsAll(content *string, model *model.Model) {
 		if !strings.Contains(strings.ToLower(col.Extra.String), AutoIncrement) {
 			continue
 		}
-		s = append(s, "`" + col.Name + "`")
+		s = append(s, "`"+col.Name+"`")
 	}
 	s = append(s, " <include refid=\"cols_exclude_id\"/>")
 
@@ -111,11 +111,11 @@ func writeCriteria(content *string, model *model.Model) {
 	writeMapper(content, "<sql id=\"criteria\">")
 	writeMapper(content, "<where>")
 	for _, v := range *model.Fields {
-		writeMapper(content, "<if test=\"" + v.FieldName + " != null\"> AND `" + v.Name + "` = #{" + v.FieldName + "}</if>")
+		writeMapper(content, "<if test=\""+v.FieldName+" != null\"> AND `"+v.Name+"` = #{"+v.FieldName+"}</if>")
 	}
 	writeMapper(content, "</where>")
 	c := *content
-	*content = c[0: len(c) - 1]
+	*content = c[0 : len(c)-1]
 	writeMapper(content, "</sql>")
 }
 
@@ -137,12 +137,12 @@ func writeCreate(content *string, m *model.Model) {
 		if strings.Contains(field.Comment.String, CreateTimeDesc) || strings.Contains(field.Comment.String, UpdateTimeDesc) {
 			additionalFields = append(additionalFields, field)
 		} else {
-			writeMapper(content, "<if test=\"" + field.FieldName + " != null\"> `" + field.Name + "`,</if>")
+			writeMapper(content, "<if test=\""+field.FieldName+" != null\"> `"+field.Name+"`,</if>")
 		}
 	}
 	additionalColumns := []string{}
 	for _, field := range additionalFields {
-		additionalColumns = append(additionalColumns, "`" + field.Name + "`")
+		additionalColumns = append(additionalColumns, "`"+field.Name+"`")
 	}
 	writeMapper(content, strings.Join(additionalColumns, ","))
 	writeMapper(content, "</trim>")
@@ -154,7 +154,7 @@ func writeCreate(content *string, m *model.Model) {
 			continue
 		}
 		if !strings.Contains(field.Comment.String, CreateTimeDesc) && !strings.Contains(field.Comment.String, UpdateTimeDesc) {
-			writeMapper(content, "<if test=\"" + field.FieldName + " != null\"> #{" + field.FieldName + "},</if>")
+			writeMapper(content, "<if test=\""+field.FieldName+" != null\"> #{"+field.FieldName+"},</if>")
 		}
 	}
 	additionalColumns = []string{}
@@ -170,7 +170,7 @@ func writeCreate(content *string, m *model.Model) {
 
 func writeUpdate(content *string, m *model.Model) {
 	writeMapper(content, "<update id=\"update\">")
-	writeMapper(content, "UPDATE <incluce refid=\"tb\"/> ")
+	writeMapper(content, "UPDATE <include refid=\"tb\"/> ")
 	writeMapper(content, "<set>")
 	var updateField *model.Field
 
@@ -180,20 +180,20 @@ func writeUpdate(content *string, m *model.Model) {
 		} else if strings.Contains(field.Comment.String, UpdateTimeDesc) {
 			updateField = &(*m.Fields)[index]
 		} else {
-			writeMapper(content, "<if test=\"" + field.FieldName + " != null\"> `" + field.Name + "` = #{" + field.FieldName + "}, </if>")
+			writeMapper(content, "<if test=\""+field.FieldName+" != null\"> `"+field.Name+"` = #{"+field.FieldName+"}, </if>")
 		}
 	}
 	if nil != updateField {
-		writeMapper(content, updateField.Name + " = now()")
+		writeMapper(content, updateField.Name+" = now()")
 	}
 	writeMapper(content, "</set>")
 
 	if nil != autoIncrement {
-		writeMapper(content, "WHERE " + autoIncrement.Name + " = #{" + autoIncrement.FieldName + "}")
+		writeMapper(content, "WHERE "+autoIncrement.Name+" = #{"+autoIncrement.FieldName+"}")
 	} else {
 		for _, field := range *m.Fields {
 			if strings.Contains(field.Key.String, PriKey) {
-				writeMapper(content, " WHERE " + field.Name + " = #{" + field.FieldName + "}")
+				writeMapper(content, " WHERE "+field.Name+" = #{"+field.FieldName+"}")
 				break
 			}
 		}
@@ -224,7 +224,7 @@ func writeMapper(f *string, info string) {
 
 func contains(info string, compare string) bool {
 	for i := 0; i < len(enterKeyboard); i++ {
-		if strings.Contains(info, compare + enterKeyboard[i]) {
+		if strings.Contains(info, compare+enterKeyboard[i]) {
 			return true
 		}
 	}

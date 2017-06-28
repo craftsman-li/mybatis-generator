@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	"gobackup/mapper/util"
 	"mybatis-generator/constant"
+	"mybatis-generator/util"
 )
 
 // 运行时,初始化信息

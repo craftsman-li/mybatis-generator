@@ -2,11 +2,11 @@ package write
 
 import (
 	"fmt"
-	"gobackup/mapper/util"
 	"math/rand"
 	. "mybatis-generator/constant"
 	"mybatis-generator/initialization"
 	"mybatis-generator/model"
+	"mybatis-generator/util"
 	"strings"
 	"time"
 )
